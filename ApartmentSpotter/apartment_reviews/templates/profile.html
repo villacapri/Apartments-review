@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Apartment Reviews{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <h4 class="teal-text text-darken-2">
+                <i class="material-icons left">account_circle</i>My Profile
+            </h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- User info card -->
+        <div class="col s12 m4">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title center-align">
+                        <i class="material-icons large teal-text">person</i>
+                    </span>
+                    <h5 class="center-align">{{ current_user.email }}</h5>
+                    <p class="center-align grey-text">
+                        {{ 'Landlord' if current_user.user_type == 'landlord' else 'Tenant' }}
+                        {% if current_user.user_type == 'tenant' %}
+                            {% if current_user.is_verified %}
+                                <span class="new badge teal" data-badge-caption="Verified"></span>
+                            {% else %}
+                                <span class="new badge grey" data-badge-caption="Unverified"></span>
+                            {% endif %}
+                        {% endif %}
+                    </p>
+                    <p class="center-align grey-text">
+                        Member since {{ current_user.created_at.strftime('%B %d, %Y') }}
+                    </p>
+                    
+                    {% if current_user.user_type == 'tenant' and not current_user.is_verified %}
+                        <div class="card-panel amber lighten-4 center-align" style="margin-top: 20px;">
+                            <p>Verify your account to leave reviews</p>
+                            <form action="{{ url_for('request_verification') }}" method="post">
+                                {{ verification_form.hidden_tag() }}
+                                <button class="btn waves-effect waves-light teal darken-2" type="submit">
+                                    Request Verification
+                                    <i class="material-icons right">verified_user</i>
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-action center-align">
+                    <a href="{{ url_for('logout') }}" class="btn-small waves-effect waves-light red darken-2">
+                        Logout
+                        <i class="material-icons right">exit_to_app</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Activity section -->
+        <div class="col s12 m8">
+            {% if current_user.user_type == 'landlord' %}
+                <h5 class="teal-text text-darken-1">
+                    <i class="material-icons left">business</i>My Listings
+                </h5>
+                
+                {% if listings %}
+                    {% for listing in listings %}
+                        <div class="card horizontal">
+                            <div class="card-stacked">
+                                <div class="card-content">
+                                    <span class="card-title">{{ listing.title }}</span>
+                                    <p>
+                                        <i class="material-icons tiny">location_on</i>
+                                        {{ listing.city }}, {{ listing.state }}
+                                    </p>
+                                    <div class="row" style="margin-bottom: 0;">
+                                        <div class="col s4">
+                                            <p>${{ listing.price }}/month</p>
+                                        </div>
+                                        <div class="col s4">
+                                            <p>{{ listing.bedrooms }} bed</p>
+                                        </div>
+                                        <div class="col s4">
+                                            <p>{{ listing.bathrooms }} bath</p>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 10px;">
+                                        <span class="new badge blue" data-badge-caption="reviews">{{ listing.reviews|length }}</span>
+                                        {% if listing.reviews %}
+                                            <span class="new badge amber darken-2" data-badge-caption="rating">{{ listing.average_rating|round(1) }}/5</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-action">
+                                    <a href="{{ url_for('view_apartment', apartment_id=listing.id) }}" class="teal-text">View Listing</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="card-panel center-align">
+                        <i class="material-icons medium teal-text text-lighten-3">add_home</i>
+                        <p>You haven't created any listings yet.</p>
+                        <a href="{{ url_for('create_listing') }}" class="btn waves-effect waves-light teal darken-2">
+                            Create Listing
+                            <i class="material-icons right">add</i>
+                        </a>
+                    </div>
+                {% endif %}
+            {% else %}
+                <h5 class="teal-text text-darken-1">
+                    <i class="material-icons left">rate_review</i>My Reviews
+                </h5>
+                
+                {% if reviews %}
+                    {% for review in reviews %}
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="card-title">
+                                    {{ review.apartment.title }}
+                                </span>
+                                <p>
+                                    <i class="material-icons tiny">location_on</i>
+                                    {{ review.apartment.city }}, {{ review.apartment.state }}
+                                </p>
+                                <div style="margin: 10px 0;">
+                                    {% for i in range(5) %}
+                                        {% if i < review.rating %}
+                                            <i class="material-icons amber-text">star</i>
+                                        {% else %}
+                                            <i class="material-icons amber-text">star_border</i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <p>{{ review.comment }}</p>
+                                <p class="grey-text">
+                                    <small>Posted on {{ review.created_at.strftime('%B %d, %Y') }}</small>
+                                </p>
+                            </div>
+                            <div class="card-action">
+                                <a href="{{ url_for('view_apartment', apartment_id=review.apartment.id) }}" class="teal-text">View Apartment</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="card-panel center-align">
+                        <i class="material-icons medium teal-text text-lighten-3">rate_review</i>
+                        <p>You haven't written any reviews yet.</p>
+                        <a href="{{ url_for('listings') }}" class="btn waves-effect waves-light teal darken-2">
+                            Browse Apartments
+                            <i class="material-icons right">search</i>
+                        </a>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

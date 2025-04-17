@@ -1,0 +1,111 @@
+
+
+/* Header styles */
+h1, h2, h3 {
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2rem;
+    color: #1e88e5;
+}
+
+h2 {
+    font-size: 1.75rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+/* Price formatting */
+.price {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #1e88e5;
+}
+
+/* Rating stars */
+.rating {
+    font-weight: bold;
+    color: #FF9800;
+}
+
+/* Property details */
+.property-details {
+    margin: 1rem 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.property-detail {
+    margin-right: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Amenities list */
+.amenities {
+    margin: 1rem 0;
+}
+
+.amenity-tag {
+    display: inline-block;
+    background-color: #e1f5fe;
+    color: #0277bd;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 2px;
+    font-size: 0.9rem;
+}
+
+/* Reviews section */
+.review {
+    border-top: 1px solid #ddd;
+    padding: 1rem 0;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.review-date {
+    color: #777;
+    font-size: 0.9rem;
+}
+
+/* Search form */
+.search-container {
+    background-color: #fafafa;
+    padding: 1.5rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+    border: 1px solid #eee;
+}
+
+/* Listings grid */
+.listings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Profile section */
+.profile-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Helper classes */
+.text-center {
+    text-align: center;
+}
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Apartment Reviews{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col s12 m8 l6 offset-m2 offset-l3">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title center-align">
+                        <i class="material-icons medium teal-text">person_add</i>
+                        <h4>Create an Account</h4>
+                    </span>
+                    
+                    <form method="POST" action="{{ url_for('register') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="input-field">
+                            <i class="material-icons prefix">email</i>
+                            {{ form.email(class="validate", id="email") }}
+                            {{ form.email.label }}
+                            {% if form.email.errors %}
+                                <span class="helper-text red-text">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="input-field">
+                            <i class="material-icons prefix">lock</i>
+                            {{ form.password(class="validate", id="password") }}
+                            {{ form.password.label }}
+                            {% if form.password.errors %}
+                                <span class="helper-text red-text">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="input-field">
+                            <i class="material-icons prefix">lock_outline</i>
+                            {{ form.confirm_password(class="validate", id="confirm_password") }}
+                            {{ form.confirm_password.label }}
+                            {% if form.confirm_password.errors %}
+                                <span class="helper-text red-text">
+                                    {% for error in form.confirm_password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="input-field">
+                            <i class="material-icons prefix">assignment_ind</i>
+                            {{ form.user_type(class="browser-default") }}
+                            <label>Account Type</label>
+                            {% if form.user_type.errors %}
+                                <span class="helper-text red-text">
+                                    {% for error in form.user_type.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="center-align" style="margin-top: 20px;">
+                            {{ form.submit(class="btn waves-effect waves-light teal darken-2") }}
+                        </div>
+                    </form>
+                </div>
+                <div class="card-action center-align">
+                    <p>Already have an account? <a href="{{ url_for('login') }}" class="teal-text">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function(){
+        $('select').formSelect();
+    });
+</script>
+{% endblock %}

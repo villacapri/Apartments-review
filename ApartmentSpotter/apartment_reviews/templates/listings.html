@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}Apartment Listings - Apartment Reviews{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <h4 class="teal-text text-darken-2">
+                <i class="material-icons left">search</i>Find Apartments
+            </h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Search filters sidebar -->
+        <div class="col s12 m4 l3">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">Filters</span>
+                    <form action="{{ url_for('listings') }}" method="get">
+                        <div class="input-field">
+                            <input id="city" name="city" type="text" value="{{ request.args.get('city', '') }}">
+                            <label for="city">City</label>
+                        </div>
+                        
+                        <div class="input-field">
+                            <select id="state" name="state">
+                                <option value="" {% if not request.args.get('state') %}selected{% endif %}>Any State</option>
+                                {% for state_code, state_name in [
+                                    ('AL', 'Alabama'), ('AK', 'Alaska'), ('AZ', 'Arizona'), ('AR', 'Arkansas'),
+                                    ('CA', 'California'), ('CO', 'Colorado'), ('CT', 'Connecticut'), ('DE', 'Delaware'),
+                                    ('FL', 'Florida'), ('GA', 'Georgia'), ('HI', 'Hawaii'), ('ID', 'Idaho'),
+                                    ('IL', 'Illinois'), ('IN', 'Indiana'), ('IA', 'Iowa'), ('KS', 'Kansas'),
+                                    ('KY', 'Kentucky'), ('LA', 'Louisiana'), ('ME', 'Maine'), ('MD', 'Maryland'),
+                                    ('MA', 'Massachusetts'), ('MI', 'Michigan'), ('MN', 'Minnesota'), ('MS', 'Mississippi'),
+                                    ('MO', 'Missouri'), ('MT', 'Montana'), ('NE', 'Nebraska'), ('NV', 'Nevada'),
+                                    ('NH', 'New Hampshire'), ('NJ', 'New Jersey'), ('NM', 'New Mexico'), ('NY', 'New York'),
+                                    ('NC', 'North Carolina'), ('ND', 'North Dakota'), ('OH', 'Ohio'), ('OK', 'Oklahoma'),
+                                    ('OR', 'Oregon'), ('PA', 'Pennsylvania'), ('RI', 'Rhode Island'), ('SC', 'South Carolina'),
+                                    ('SD', 'South Dakota'), ('TN', 'Tennessee'), ('TX', 'Texas'), ('UT', 'Utah'),
+                                    ('VT', 'Vermont'), ('VA', 'Virginia'), ('WA', 'Washington'), ('WV', 'West Virginia'),
+                                    ('WI', 'Wisconsin'), ('WY', 'Wyoming')
+                                ] %}
+                                    <option value="{{ state_code }}" {% if request.args.get('state') == state_code %}selected{% endif %}>{{ state_name }}</option>
+                                {% endfor %}
+                            </select>
+                            <label>State</label>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="input-field col s6">
+                                <input id="min_price" name="min_price" type="number" min="0" value="{{ request.args.get('min_price', '') }}">
+                                <label for="min_price">Min Price</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="max_price" name="max_price" type="number" min="0" value="{{ request.args.get('max_price', '') }}">
+                                <label for="max_price">Max Price</label>
+                            </div>
+                        </div>
+                        
+                        <div class="input-field">
+                            <select id="bedrooms" name="bedrooms">
+                                <option value="" {% if not request.args.get('bedrooms') %}selected{% endif %}>Any</option>
+                                <option value="0" {% if request.args.get('bedrooms') == '0' %}selected{% endif %}>Studio</option>
+                                <option value="1" {% if request.args.get('bedrooms') == '1' %}selected{% endif %}>1</option>
+                                <option value="2" {% if request.args.get('bedrooms') == '2' %}selected{% endif %}>2</option>
+                                <option value="3" {% if request.args.get('bedrooms') == '3' %}selected{% endif %}>3</option>
+                                <option value="4" {% if request.args.get('bedrooms') == '4' %}selected{% endif %}>4+</option>
+                            </select>
+                            <label>Bedrooms</label>
+                        </div>
+                        
+                        <div class="input-field">
+                            <select id="bathrooms" name="bathrooms">
+                                <option value="" {% if not request.args.get('bathrooms') %}selected{% endif %}>Any</option>
+                                <option value="1" {% if request.args.get('bathrooms') == '1' %}selected{% endif %}>1</option>
+                                <option value="1.5" {% if request.args.get('bathrooms') == '1.5' %}selected{% endif %}>1.5</option>
+                                <option value="2" {% if request.args.get('bathrooms') == '2' %}selected{% endif %}>2</option>
+                                <option value="2.5" {% if request.args.get('bathrooms') == '2.5' %}selected{% endif %}>2.5</option>
+                                <option value="3" {% if request.args.get('bathrooms') == '3' %}selected{% endif %}>3+</option>
+                            </select>
+                            <label>Bathrooms</label>
+                        </div>
+                        
+                        <button class="btn waves-effect waves-light teal darken-2 col s12" type="submit">
+                            Apply Filters
+                            <i class="material-icons right">filter_list</i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Apartment listings -->
+        <div class="col s12 m8 l9">
+            {% if apartments %}
+                <div class="row">
+                    {% for apartment in apartments %}
+                        <div class="col s12">
+                            <div class="card horizontal hoverable">
+                                <div class="card-image hide-on-small-only" style="min-width: 200px; max-width: 200px;">
+                                    <div style="height: 200px; background-color: #26a69a;"></div>
+                                </div>
+                                <div class="card-stacked">
+                                    <div class="card-content">
+                                        <span class="card-title">{{ apartment.title }}</span>
+                                        <p class="grey-text">
+                                            <i class="material-icons tiny">location_on</i>
+                                            {{ apartment.address }}, {{ apartment.city }}, {{ apartment.state }} {{ apartment.zip_code }}
+                                        </p>
+                                        <div class="row" style="margin-bottom: 0;">
+                                            <div class="col s4">
+                                                <p><strong>${{ apartment.price }}</strong>/month</p>
+                                            </div>
+                                            <div class="col s4">
+                                                <p>{{ apartment.bedrooms }} bed</p>
+                                            </div>
+                                            <div class="col s4">
+                                                <p>{{ apartment.bathrooms }} bath</p>
+                                            </div>
+                                        </div>
+                                        <div style="margin-top: 10px;">
+                                            {% if apartment.amenities %}
+                                                {% for amenity in apartment.amenities[:3] %}
+                                                    <div class="chip">{{ amenity.name }}</div>
+                                                {% endfor %}
+                                                {% if apartment.amenities|length > 3 %}
+                                                    <div class="chip">+{{ apartment.amenities|length - 3 }} more</div>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="card-action">
+                                        <div class="row" style="margin-bottom: 0;">
+                                            <div class="col s7">
+                                                <div class="valign-wrapper">
+                                                    {% if apartment.reviews %}
+                                                        <i class="material-icons tiny amber-text">star</i>
+                                                        <span class="rating">{{ apartment.average_rating|round(1) }}/5</span>
+                                                        <span class="grey-text" style="margin-left: 5px;">({{ apartment.reviews|length }} reviews)</span>
+                                                    {% else %}
+                                                        <i class="material-icons tiny">star_border</i>
+                                                        <span class="grey-text">No reviews yet</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col s5 right-align">
+                                                <a href="{{ url_for('view_apartment', apartment_id=apartment.id) }}" class="btn waves-effect waves-light teal darken-2">
+                                                    View
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-content center-align">
+                        <i class="material-icons large teal-text text-lighten-3">search</i>
+                        <h5>No apartments found</h5>
+                        <p>Try adjusting your search filters or check back later for new listings.</p>
+                        
+                        {% if current_user.is_authenticated and current_user.user_type == 'landlord' %}
+                            <div style="margin-top: 20px;">
+                                <a href="{{ url_for('create_listing') }}" class="btn waves-effect waves-light teal">
+                                    Add Your Property
+                                    <i class="material-icons right">add</i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function(){
+        $('select').formSelect();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Apartment Reviews{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col s12 m8 l6 offset-m2 offset-l3">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title center-align">
+                        <i class="material-icons medium teal-text">account_circle</i>
+                        <h4>Login</h4>
+                    </span>
+                    
+                    <form method="POST" action="{{ url_for('login') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="input-field">
+                            <i class="material-icons prefix">email</i>
+                            {{ form.email(class="validate", id="email") }}
+                            {{ form.email.label }}
+                            {% if form.email.errors %}
+                                <span class="helper-text red-text">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="input-field">
+                            <i class="material-icons prefix">lock</i>
+                            {{ form.password(class="validate", id="password") }}
+                            {{ form.password.label }}
+                            {% if form.password.errors %}
+                                <span class="helper-text red-text">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <p>
+                            <label>
+                                {{ form.remember(type="checkbox", id="remember") }}
+                                <span>{{ form.remember.label.text }}</span>
+                            </label>
+                        </p>
+                        
+                        <div class="center-align" style="margin-top: 20px;">
+                            {{ form.submit(class="btn waves-effect waves-light teal darken-2") }}
+                        </div>
+                    </form>
+                </div>
+                <div class="card-action center-align">
+                    <p>Don't have an account? <a href="{{ url_for('register') }}" class="teal-text">Register here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

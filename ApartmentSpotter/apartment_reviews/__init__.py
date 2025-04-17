@@ -1,0 +1,1 @@
+# Initialize the apartment_reviews package

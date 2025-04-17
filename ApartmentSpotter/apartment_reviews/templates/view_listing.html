@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ apartment.title }} - Apartment Reviews{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <nav>
+                <div class="nav-wrapper teal lighten-1">
+                    <div class="col s12">
+                        <a href="{{ url_for('index') }}" class="breadcrumb">Home</a>
+                        <a href="{{ url_for('listings') }}" class="breadcrumb">Listings</a>
+                        <a href="#!" class="breadcrumb">{{ apartment.title }}</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Apartment details -->
+        <div class="col s12 m8">
+            <div class="card">
+                <div class="card-image">
+                    <div style="height: 300px; background-color: #26a69a;"></div>
+                    <span class="card-title">{{ apartment.title }}</span>
+                </div>
+                <div class="card-content">
+                    <div class="row" style="margin-bottom: 0;">
+                        <div class="col s12 m4">
+                            <p class="center-align">
+                                <i class="material-icons small teal-text">attach_money</i><br>
+                                <strong>${{ apartment.price }}/month</strong>
+                            </p>
+                        </div>
+                        <div class="col s12 m4">
+                            <p class="center-align">
+                                <i class="material-icons small teal-text">hotel</i><br>
+                                <strong>{{ apartment.bedrooms }}</strong> bedrooms
+                            </p>
+                        </div>
+                        <div class="col s12 m4">
+                            <p class="center-align">
+                                <i class="material-icons small teal-text">bathtub</i><br>
+                                <strong>{{ apartment.bathrooms }}</strong> bathrooms
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="divider" style="margin: 20px 0;"></div>
+                    
+                    <h5>Description</h5>
+                    <p>{{ apartment.description }}</p>
+                    
+                    <h5>Location</h5>
+                    <p>
+                        <i class="material-icons tiny">location_on</i>
+                        {{ apartment.address }}, {{ apartment.city }}, {{ apartment.state }} {{ apartment.zip_code }}
+                    </p>
+                    
+                    <h5>Amenities</h5>
+                    {% if apartment.amenities %}
+                        <div>
+                            {% for amenity in apartment.amenities %}
+                                <div class="chip">
+                                    <i class="material-icons tiny">check</i>
+                                    {{ amenity.name }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No amenities listed</p>
+                    {% endif %}
+                    
+                    <div class="divider" style="margin: 20px 0;"></div>
+                    
+                    <div class="row">
+                        <div class="col s12">
+                            <div class="card-panel teal lighten-5">
+                                <div class="row valign-wrapper" style="margin-bottom: 0;">
+                                    <div class="col s2 center-align">
+                                        <i class="material-icons medium teal-text">person</i>
+                                    </div>
+                                    <div class="col s10">
+                                        <span class="black-text">
+                                            <strong>Landlord Information</strong><br>
+                                            This property is managed by a verified landlord.
+                                            <p class="grey-text">Listed since {{ apartment.created_at.strftime('%B %d, %Y') }}</p>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar with review summary and form -->
+        <div class="col s12 m4">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">Reviews</span>
+                    
+                    <div class="center-align" style="margin-bottom: 20px;">
+                        <div style="font-size: 3rem; font-weight: bold;">
+                            {% if avg_rating > 0 %}
+                                {{ avg_rating|round(1) }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if avg_rating > 0 %}
+                                {% for i in range(5) %}
+                                    {% if i < avg_rating|int %}
+                                        <i class="material-icons amber-text">star</i>
+                                    {% elif i < avg_rating and avg_rating|int < avg_rating %}
+                                        <i class="material-icons amber-text">star_half</i>
+                                    {% else %}
+                                        <i class="material-icons amber-text">star_border</i>
+                                    {% endif %}
+                                {% endfor %}
+                                <p class="grey-text">{{ reviews|length }} {{ 'review' if reviews|length == 1 else 'reviews' }}</p>
+                            {% else %}
+                                <p>No reviews yet</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if current_user.is_authenticated and current_user.user_type == 'tenant' %}
+                        {% if current_user.is_verified %}
+                            <div class="card-panel teal lighten-5">
+                                <h6>Add Your Review</h6>
+                                <form action="{{ url_for('add_review', apartment_id=apartment.id) }}" method="post">
+                                    {{ review_form.hidden_tag() }}
+                                    
+                                    <div class="input-field">
+                                        <p class="range-field">
+                                            <label>Rating</label>
+                                            <input type="range" id="rating" name="rating" min="1" max="5" value="5" />
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="input-field">
+                                        {{ review_form.comment(class="materialize-textarea", id="comment") }}
+                                        {{ review_form.comment.label }}
+                                        {% if review_form.comment.errors %}
+                                            <span class="helper-text red-text">
+                                                {% for error in review_form.comment.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <button class="btn waves-effect waves-light teal darken-2" type="submit">
+                                        Submit Review
+                                        <i class="material-icons right">send</i>
+                                    </button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="card-panel amber lighten-4">
+                                <i class="material-icons left">info</i>
+                                You need to be a verified tenant to leave reviews. Please request verification in your profile.
+                                <a href="{{ url_for('profile') }}" class="btn-small waves-effect waves-light teal darken-2" style="margin-top: 10px;">
+                                    Verify Account
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% elif not current_user.is_authenticated %}
+                        <div class="card-panel teal lighten-5">
+                            <p class="center-align">
+                                <a href="{{ url_for('login') }}" class="btn waves-effect waves-light teal darken-2">
+                                    Login to Review
+                                </a>
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews section -->
+    <div class="row">
+        <div class="col s12">
+            <h5 class="teal-text text-darken-2">
+                <i class="material-icons left">rate_review</i>Tenant Reviews
+            </h5>
+            
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <div style="margin-bottom: 10px;">
+                                    {% for i in range(5) %}
+                                        {% if i < review.rating %}
+                                            <i class="material-icons amber-text">star</i>
+                                        {% else %}
+                                            <i class="material-icons amber-text">star_border</i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <p>{{ review.comment }}</p>
+                                <p class="grey-text" style="margin-top: 10px;">
+                                    <small>Posted on {{ review.created_at.strftime('%B %d, %Y') }}</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="card-panel center-align">
+                    <i class="material-icons medium teal-text text-lighten-3">rate_review</i>
+                    <p>No reviews yet for this apartment.</p>
+                    
+                    {% if current_user.is_authenticated and current_user.user_type == 'tenant' and current_user.is_verified %}
+                        <p>Be the first to share your experience!</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function(){
+        $('.parallax').parallax();
+        $('.slider').slider();
+        $('.materialboxed').materialbox();
+    });
+</script>
+{% endblock %}
