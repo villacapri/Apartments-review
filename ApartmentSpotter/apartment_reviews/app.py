@@ -167,8 +167,6 @@ def request_verification():
     form = VerificationRequestForm()
     
     if form.validate_on_submit() and current_user.user_type == 'tenant':
-        # In a real application, this would trigger a verification process
-        # For demo purposes, we'll just mark the user as verified
         current_user.is_verified = True
         db.session.commit()
         flash('Your account has been verified!', 'success')
